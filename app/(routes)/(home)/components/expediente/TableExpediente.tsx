@@ -21,6 +21,14 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import PartesProcesalesForm from "./PartesProcesalesForm";
+import DocumentosTable from "./CuadernoForm";
+
+interface Cuaderno {
+  id: string;
+  numero: number;
+  descripcion: string;
+  documento: any[];
+}
 
 export interface Expediente {
   id: string;
@@ -32,7 +40,7 @@ export interface Expediente {
   expedienteFisico: boolean;
   documentosEnSoporteFisico: boolean;
   partesProcesales: any[];
-  cuadernos: any[];
+  cuadernos: Cuaderno[];
 }
 
 export interface Despacho {
@@ -93,7 +101,6 @@ export default function TableExpediente() {
               <TableCell>{expediente.departamento}</TableCell>
               <TableCell>{expediente.ciudad}</TableCell>
 
-              {/* Botón para abrir el modal del despacho */}
               <TableCell>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -128,7 +135,6 @@ export default function TableExpediente() {
                 {expediente.documentosEnSoporteFisico ? "Sí" : "No"}
               </TableCell>
 
-              {/* Modal para Partes Procesales */}
               <TableCell>
                 <Dialog
                   open={selectedExpedienteId === expediente.id}
@@ -153,13 +159,31 @@ export default function TableExpediente() {
                 </Dialog>
               </TableCell>
 
-              <TableCell>{expediente.cuadernos.length}</TableCell>
+              <TableCell>
+                <Dialog
+                  open={selectedExpedienteId === expediente.id}
+                  onOpenChange={(isOpen) =>
+                    setSelectedExpedienteId(isOpen ? expediente.id : null)
+                  }
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedExpedienteId(expediente.id)}
+                    >
+                      Ver Cuadernos
+                    </Button>
+                  </DialogTrigger>
+
+                  <DocumentosTable expedienteId={expediente.id} data={data} />
+                </Dialog>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
-      {/* Modal para Despacho */}
       {selectedDespacho && (
         <Dialog
           open={!!selectedDespacho}
